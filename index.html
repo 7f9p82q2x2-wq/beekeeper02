@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BeeKeeper PRO</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f4f4f4;
+}
+
+header{
+background:#f7b500;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+}
+
+.container{
+padding:20px;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:5px;
+}
+
+button{
+margin-top:10px;
+padding:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>🐝 BeeKeeper PRO</header>
+
+<div class="container">
+
+<h2>Pridať úľ</h2>
+
+<div class="card">
+
+<input id="name" placeholder="Názov úľa">
+
+<select id="type">
+<option>Langstroth</option>
+<option>Langstroth Jumbo</option>
+<option>B</option>
+</select>
+
+<input id="plodisko" placeholder="Počet plodiskových nadstavkov">
+
+<input id="mednik" placeholder="Počet medníkov 2/3">
+
+<textarea id="note" placeholder="Poznámka"></textarea>
+
+<button onclick="addHive()">Uložiť úľ</button>
+
+</div>
+
+
+<h2>Moje úle</h2>
+
+<div id="hives"></div>
+
+
+<h2>Záznam prehliadky</h2>
+
+<div class="card">
+
+<select id="hiveSelect"></select>
+
+<input id="date" type="date">
+
+<input id="stings" placeholder="Počet žihadiel 😄">
+
+<input id="varroa" placeholder="Varroa počet">
+
+<input id="honey" placeholder="Med kg">
+
+<textarea id="inspectionNote" placeholder="Poznámka (rojová nálada, matečníky...)"></textarea>
+
+<button onclick="addInspection()">Uložiť prehliadku</button>
+
+</div>
+
+
+<h2>Prehliadky</h2>
+
+<div id="inspections"></div>
+
+</div>
+
+
+<script>
+
+let hives=JSON.parse(localStorage.getItem("hives")||"[]")
+let inspections=JSON.parse(localStorage.getItem("inspections")||"[]")
+
+function save(){
+localStorage.setItem("hives",JSON.stringify(hives))
+localStorage.setItem("inspections",JSON.stringify(inspections))
+}
+
+function renderHives(){
+
+let html=""
+let select=""
+
+hives.forEach((h,i)=>{
+
+html+=`
+<div class="card">
+<b>${h.name}</b><br>
+Typ: ${h.type}<br>
+Plodisko: ${h.plodisko}<br>
+Medníky: ${h.mednik}<br>
+Poznámka: ${h.note}
+</div>
+`
+
+select+=`<option value="${i}">${h.name}</option>`
+
+})
+
+document.getElementById("hives").innerHTML=html
+document.getElementById("hiveSelect").innerHTML=select
+
+}
+
+function renderInspections(){
+
+let html=""
+
+inspections.forEach(i=>{
+
+let hive=hives[i.hive]
+
+html+=`
+<div class="card">
+<b>${hive.name}</b><br>
+Dátum: ${i.date}<br>
+Med: ${i.honey} kg<br>
+Varroa: ${i.varroa}<br>
+Žihadlá: ${i.stings}<br>
+Poznámka: ${i.note}
+</div>
+`
+
+})
+
+document.getElementById("inspections").innerHTML=html
+
+}
+
+function addHive(){
+
+let hive={
+name:document.getElementById("name").value,
+type:document.getElementById("type").value,
+plodisko:document.getElementById("plodisko").value,
+mednik:document.getElementById("mednik").value,
+note:document.getElementById("note").value
+}
+
+hives.push(hive)
+
+save()
+renderHives()
+
+}
+
+function addInspection(){
+
+let i={
+hive:document.getElementById("hiveSelect").value,
+date:document.getElementById("date").value,
+stings:document.getElementById("stings").value,
+varroa:document.getElementById("varroa").value,
+honey:document.getElementById("honey").value,
+note:document.getElementById("inspectionNote").value
+}
+
+inspections.push(i)
+
+save()
+renderInspections()
+
+}
+
+renderHives()
+renderInspections()
+
+</script>
+
+</body>
+</html>
